@@ -16,11 +16,15 @@ public class FirstJobListener implements JobExecutionListener {
     @Autowired
     private ControlRepository controlRepository;
 
+    private boolean controlTable = false;
+
     @Override
     public void beforeJob(JobExecution jobExecution) {
         System.out.println("Before the job using my listener Nelson");
         System.out.println("The name of the job is " + jobExecution.getJobInstance().getJobName());
         Control control = controlRepository.findTopByOrderByIdDesc();
+        System.out.println("The id of the control table is " + control.getId());
+        this.controlTable = control.isStatus();
         if(control.isStatus()){
             System.out.println("The value of the status of the last job was " + control.isStatus() + "  and the job ran");
         }
@@ -34,8 +38,13 @@ public class FirstJobListener implements JobExecutionListener {
         System.out.println("After the job using my listener Nelson");
         Control control = new Control();
         control.setNameJob(jobExecution.getJobInstance().getJobName());
-        //control.setStatus(true);
-        control.setStatus(false);
+        if(controlTable){
+            control.setStatus(false);
+        }
+        else{
+            control.setStatus(true);
+        }
+        control.setDate(new Date());
         controlRepository.save(control);
     }
 
