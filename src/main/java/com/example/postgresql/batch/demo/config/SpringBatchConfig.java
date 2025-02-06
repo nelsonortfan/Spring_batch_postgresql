@@ -1,5 +1,6 @@
 package com.example.postgresql.batch.demo.config;
 
+import com.example.postgresql.batch.demo.listener.FirstJobListener;
 import com.example.postgresql.batch.demo.service.SecondTasklet;
 import com.example.postgresql.batch.demo.task.SimpleTask;
 import org.springframework.batch.core.Job;
@@ -22,14 +23,17 @@ public class SpringBatchConfig {
     private SecondTasklet secondTasklet;
     private final String SIMPLE_JOB = "Simple job of Nelson";
     private final String SIMPLE_TASK = "Simple task of mine";
-
     private final String SECOND_TASK = "Second simple task of mine";
+
+    @Autowired
+    private FirstJobListener firstJobListener;
 
     @Bean
     public Job simpleTaskJob(JobRepository jobRepository, Step simpleTaskStep, Step secondTaskStep){
         return new JobBuilder(SIMPLE_JOB,jobRepository)
                 .start(simpleTaskStep)
                 .next(secondTaskStep)
+                .listener(firstJobListener)
                 .build();
     }
     @Bean
